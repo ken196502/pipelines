@@ -21,9 +21,9 @@ Git repository and storage. It does not import anything from a parent project.
 
 ```bash
 npm install
-cp .env.example .env          # fill in the API keys
+cp .env.example .env          # fill in gateway URLs and API keys
 npm run setup:geckodriver     # downloads geckodriver into .cache/
-# edit config/llm.json: real baseUrl, model ids and apiKeyEnv names
+# edit config/llm.json: model ids and the env var names for base URLs and keys
 # edit config/xblog.json: binaries, keywords, thresholds, auth mode
 npm run xblog:login           # once, opens a headed Firefox and saves the profile
 ```
@@ -40,7 +40,9 @@ Node fails loudly; the CLI never invents defaults for secrets.
 
 | Variable | Used by |
 |---|---|
+| `LLM_BASE_URL` | chat gateway root named by `llm.profiles.<name>.baseUrlEnv` |
 | `LLM_API_KEY` | chat profile named by `llm.profiles.<name>.apiKeyEnv` |
+| `IMAGE_BASE_URL` | image gateway root named by `llm.image.baseUrlEnv` |
 | `IMAGE_API_KEY` | image profile `llm.image.apiKeyEnv` |
 
 The variable names come from `config/llm.json`; the values live only in `.env`,
@@ -55,19 +57,21 @@ All config files are strict JSON: an unknown key is an error, not a warning.
 | Field | Meaning |
 |---|---|
 | `profiles.<name>.apiStyle` | must be `openai-chat` |
-| `profiles.<name>.baseUrl` | gateway root, e.g. `https://gateway.example/v1` |
+| `profiles.<name>.baseUrlEnv` | environment variable holding the gateway root, e.g. `https://gateway.example/v1` |
 | `profiles.<name>.apiKeyEnv` | environment variable holding the key |
 | `profiles.<name>.model` | model id |
 | `profiles.<name>.timeoutMs` | per-request timeout |
 | `profiles.<name>.maxRetries` | retries for transport errors, timeout, 429 and 5xx |
 | `profiles.<name>.retryBaseDelayMs` | exponential backoff base |
 | `image.apiStyle` | must be `openai-images` |
-| `image.baseUrl` / `apiKeyEnv` / `model` | image endpoint settings |
+| `image.baseUrlEnv` / `apiKeyEnv` / `model` | image endpoint settings; the URL and key come from the named env vars |
 | `image.size` | requested image size, e.g. `1536x1024` |
 | `image.timeoutMs` / `maxRetries` | image request budget |
 
-The committed values are placeholders (`example-gateway`, `your-model-id`).
-They are rejected before any network call with `LLM_PLACEHOLDER_CONFIG`.
+The committed model ids are placeholders (`your-model-id`, `your-image-model-id`).
+A base URL whose host is `example-gateway` is rejected the same way. Both fail
+before any network call with `LLM_PLACEHOLDER_CONFIG`. The gateway roots
+themselves live in `.env` (`LLM_BASE_URL`, `IMAGE_BASE_URL`).
 
 ### `config/xblog.json`
 

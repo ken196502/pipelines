@@ -101,7 +101,7 @@ describe('LLM profile resolution', () => {
     profiles: {
       default: {
         apiStyle: 'openai-chat' as const,
-        baseUrl: 'https://llm.example.test/v1',
+        baseUrlEnv: 'PIPELINE_TEMPLATE_TEST_LLM_BASE_URL',
         apiKeyEnv: 'PIPELINE_TEMPLATE_TEST_LLM_KEY',
         model: 'real-model',
         timeoutMs: 1000,
@@ -111,7 +111,7 @@ describe('LLM profile resolution', () => {
     },
     image: {
       apiStyle: 'openai-images' as const,
-      baseUrl: 'https://llm.example.test/v1',
+      baseUrlEnv: 'PIPELINE_TEMPLATE_TEST_IMAGE_BASE_URL',
       apiKeyEnv: 'PIPELINE_TEMPLATE_TEST_IMAGE_KEY',
       model: 'real-image-model',
       size: '1024x1024',
@@ -120,13 +120,15 @@ describe('LLM profile resolution', () => {
     },
   };
 
-  it('rejects the committed placeholder gateway and model', () => {
+  it('rejects the example gateway host and placeholder models', () => {
     const config = llmConfigSchema.parse({
       profiles: {
-        default: { ...validConfig.profiles.default, baseUrl: 'https://example-gateway/v1', model: 'your-model-id' },
+        default: { ...validConfig.profiles.default, model: 'your-model-id' },
       },
       image: validConfig.image,
     });
+    process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL = 'https://example-gateway/v1';
+    process.env.PIPELINE_TEMPLATE_TEST_IMAGE_BASE_URL = 'https://llm.example.test/v1';
     assert.throws(() => resolveProfile(config, 'default'), (err: unknown) => {
       assert.ok(err instanceof ConfigError);
       assert.equal(err.code, 'LLM_PLACEHOLDER_CONFIG');
@@ -137,6 +139,8 @@ describe('LLM profile resolution', () => {
       assert.equal(err.code, 'LLM_PLACEHOLDER_CONFIG');
       return true;
     });
+    delete process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL;
+    delete process.env.PIPELINE_TEMPLATE_TEST_IMAGE_BASE_URL;
   });
 
   it('rejects an unknown profile name', () => {
@@ -150,6 +154,7 @@ describe('LLM profile resolution', () => {
 
   it('requires the configured api key env var', () => {
     const config = llmConfigSchema.parse(validConfig);
+    process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL = 'https://llm.example.test/v1';
     delete process.env.PIPELINE_TEMPLATE_TEST_LLM_KEY;
     assert.throws(() => resolveProfile(config, 'default'), (err: unknown) => {
       assert.ok(err instanceof ConfigError);
@@ -157,15 +162,39 @@ describe('LLM profile resolution', () => {
       assert.equal(err.context.name, 'PIPELINE_TEMPLATE_TEST_LLM_KEY');
       return true;
     });
+    delete process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL;
   });
 
-  it('resolves a valid profile', () => {
+  it('resolves baseUrl and the api key from the named env vars', () => {
     const config = llmConfigSchema.parse(validConfig);
+    process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL = 'https://llm.example.test/v1';
     process.env.PIPELINE_TEMPLATE_TEST_LLM_KEY = 'sk-test';
     const profile = resolveProfile(config, 'default');
     assert.equal(profile.name, 'default');
+    assert.equal(profile.baseUrl, 'https://llm.example.test/v1');
+    assert.equal(profile.baseUrlEnv, 'PIPELINE_TEMPLATE_TEST_LLM_BASE_URL');
     assert.equal(profile.apiKey, 'sk-test');
     assert.equal(profile.model, 'real-model');
+    delete process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL;
     delete process.env.PIPELINE_TEMPLATE_TEST_LLM_KEY;
+  });
+
+  it('fails when the base URL env var is missing or not a URL', () => {
+    const config = llmConfigSchema.parse(validConfig);
+    delete process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL;
+    assert.throws(() => resolveProfile(config, 'default'), (err: unknown) => {
+      assert.ok(err instanceof ConfigError);
+      assert.equal(err.code, 'ENV_MISSING');
+      assert.equal(err.context.name, 'PIPELINE_TEMPLATE_TEST_LLM_BASE_URL');
+      return true;
+    });
+    process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL = 'not-a-url';
+    assert.throws(() => resolveProfile(config, 'default'), (err: unknown) => {
+      assert.ok(err instanceof ConfigError);
+      assert.equal(err.code, 'CONFIG_INVALID');
+      assert.equal(err.context.name, 'PIPELINE_TEMPLATE_TEST_LLM_BASE_URL');
+      return true;
+    });
+    delete process.env.PIPELINE_TEMPLATE_TEST_LLM_BASE_URL;
   });
 });

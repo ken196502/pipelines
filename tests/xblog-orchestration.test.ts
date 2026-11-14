@@ -143,6 +143,7 @@ function llmProfile(baseUrl: string): ResolvedLlmProfile {
     name: 'default',
     apiStyle: 'openai-chat',
     baseUrl,
+    baseUrlEnv: 'UNUSED_IN_TESTS',
     apiKeyEnv: 'UNUSED_IN_TESTS',
     apiKey: 'test-key',
     model: 'test-model',

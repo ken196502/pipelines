@@ -18,6 +18,7 @@ function profileFor(server: FakeLlmServer, overrides: Partial<ResolvedLlmProfile
     name: 'default',
     apiStyle: 'openai-chat',
     baseUrl: server.url,
+    baseUrlEnv: 'PIPELINE_TEMPLATE_FAKE_BASE_URL',
     apiKeyEnv: 'PIPELINE_TEMPLATE_FAKE_KEY',
     apiKey: 'sk-test-secret',
     model: 'test-model',

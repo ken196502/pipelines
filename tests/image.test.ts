@@ -27,6 +27,7 @@ function profileFor(server: FakeLlmServer): ResolvedImageProfile {
   return {
     apiStyle: 'openai-images',
     baseUrl: server.url,
+    baseUrlEnv: 'PIPELINE_TEMPLATE_FAKE_IMAGE_BASE_URL',
     apiKeyEnv: 'PIPELINE_TEMPLATE_FAKE_IMAGE_KEY',
     apiKey: 'sk-image-secret',
     model: 'test-image-model',

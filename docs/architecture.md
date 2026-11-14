@@ -35,7 +35,7 @@ the run directory and evidence paths.
 | `CONFIG_PARSE` | lib | invalid JSON, includes line/column | fix the file |
 | `CONFIG_INVALID` | lib | schema violation, includes issue paths | fix the field |
 | `ENV_MISSING` | lib | required env var missing/empty | add it to `.env` |
-| `LLM_PLACEHOLDER_CONFIG` | lib | `example-gateway` / `your-model-id` still present | edit `config/llm.json` |
+| `LLM_PLACEHOLDER_CONFIG` | lib | base URL host is `example-gateway`, or model id is still `your-model-id` | set a real base URL in `.env` and a real model in `config/llm.json` |
 | `LLM_PROFILE_UNKNOWN` | lib | profile name not defined | add it or fix the reference |
 | `STORAGE_UNSAFE_KEY` | lib | key is not path-segment safe | fix the key |
 | `STORAGE_ROOT_INVALID` | lib | root is `/`, home or the OS temp dir | configure `storage.root` |
