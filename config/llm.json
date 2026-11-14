@@ -1,0 +1,22 @@
+{
+  "profiles": {
+    "default": {
+      "apiStyle": "openai-chat",
+      "baseUrl": "https://example-gateway/v1",
+      "apiKeyEnv": "LLM_API_KEY",
+      "model": "your-model-id",
+      "timeoutMs": 120000,
+      "maxRetries": 2,
+      "retryBaseDelayMs": 2000
+    }
+  },
+  "image": {
+    "apiStyle": "openai-images",
+    "baseUrl": "https://example-gateway/v1",
+    "apiKeyEnv": "IMAGE_API_KEY",
+    "model": "your-image-model-id",
+    "size": "1536x1024",
+    "timeoutMs": 180000,
+    "maxRetries": 2
+  }
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Articles / X</title>
+  </head>
+  <body>
+    <main>
+      <button aria-label="create">Create</button>
+      <textarea name="Article Title"></textarea>
+      <div data-testid="composer" contenteditable="true"></div>
+      <input type="file" accept="image/png,image/jpeg" />
+      <button data-testid="applyButton">Apply</button>
+      <button data-testid="publishButton" onclick="window.__published = true">Publish</button>
+      <div id="cover"><img id="cover-img" alt="cover" hidden /></div>
+      <div id="saved">Saving…</div>
+      <section id="drafts">
+        <a href="/compose/articles/123">A Test Draft Title</a>
+      </section>
+    </main>
+    <script>
+      const fileInput = document.querySelector('input[type="file"]');
+      fileInput.addEventListener('change', () => {
+        const image = document.getElementById('cover-img');
+        image.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        image.hidden = false;
+      });
+      setTimeout(() => {
+        document.getElementById('saved').textContent = 'Saved';
+      }, 800);
+    </script>
+  </body>
+</html>

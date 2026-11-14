@@ -1,0 +1,21 @@
+{
+  "language": "en",
+  "keywords": ["Agent system", "Agent orchestration"],
+  "storage": { "root": "../data" },
+  "llm": { "profilesFile": "./llm.json", "relevance": "default", "article": "default" },
+  "browser": {
+    "firefoxBinary": "/usr/bin/firefox-esr",
+    "geckodriverBinary": "../.cache/geckodriver/geckodriver",
+    "headless": true,
+    "windowSize": { "width": 1280, "height": 900 },
+    "pageLoadTimeoutMs": 60000,
+    "proxy": null
+  },
+  "auth": { "mode": "profile", "profileDir": "../data/browser-profiles/x", "cookiesFile": null, "expectedHandle": null },
+  "search": { "feed": "top", "tweetsPerKeyword": 15, "maxScrolls": 10, "useLangOperator": false },
+  "relevance": { "minScore": 6, "maxSources": 3, "batchSize": 20, "maxTokens": 4000, "excludeUsedSources": true },
+  "article": { "minChars": 1500, "maxChars": 8000, "maxTokens": 8000 },
+  "premium": { "markers": ["[Premium]"] },
+  "draft": { "saveTimeoutMs": 45000 },
+  "logging": { "saveLlmTranscripts": false }
+}
